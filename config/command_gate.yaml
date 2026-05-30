@@ -1,0 +1,18 @@
+command_gate:
+  ros__parameters:
+    num_channels: 2
+    require_heartbeat: true
+    heartbeat_timeout: 1.0
+    heartbeat_topic: ~/heartbeat
+    require_enable: false
+    enable_topic: ~/enable
+    channel_0:
+      input_topic: steering_in
+      output_topic: steering_out
+      message_type: std_msgs/msg/Float64
+      fallback_topic: ""
+    channel_1:
+      input_topic: drive_in
+      output_topic: drive_out
+      message_type: ackermann_msgs/msg/AckermannDriveStamped
+      fallback_topic: safe_drive_cmd
