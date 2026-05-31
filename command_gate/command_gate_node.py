@@ -59,6 +59,7 @@ class CommandGateNode(Node):
         self.declare_parameter('require_heartbeat', True)
         self.declare_parameter('heartbeat_timeout', 1.0)
         self.declare_parameter('heartbeat_topic', '~/heartbeat')
+        self.declare_parameter('heartbeat_type', 'std_msgs/msg/Empty')
         self.declare_parameter('require_enable', False)
         self.declare_parameter('enable_topic', '~/enable')
 
@@ -66,6 +67,7 @@ class CommandGateNode(Node):
         self._require_heartbeat: bool = self.get_parameter('require_heartbeat').value
         self._heartbeat_timeout: float = self.get_parameter('heartbeat_timeout').value
         self._heartbeat_topic: str = self.get_parameter('heartbeat_topic').value
+        self._heartbeat_type: str = self.get_parameter('heartbeat_type').value
         self._require_enable: bool = self.get_parameter('require_enable').value
         self._enable_topic: str = self.get_parameter('enable_topic').value
 
@@ -138,9 +140,16 @@ class CommandGateNode(Node):
     # -------------------------------------------------------- heartbeat / enable
 
     def _setup_heartbeat(self) -> None:
-        from std_msgs.msg import Empty  # local import keeps top-level clean
+        try:
+            hb_class = get_message(self._heartbeat_type)
+        except Exception as exc:
+            self.get_logger().warn(
+                f'Cannot resolve heartbeat_type "{self._heartbeat_type}": {exc}. '
+                f'Heartbeat subscription not created; gate will stay closed.'
+            )
+            return
         self._heartbeat_sub = self.create_subscription(
-            Empty, self._heartbeat_topic, self._on_heartbeat_cb, 10
+            hb_class, self._heartbeat_topic, self._on_heartbeat_cb, 10
         )
 
     def _setup_enable(self) -> None:

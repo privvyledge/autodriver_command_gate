@@ -4,6 +4,7 @@ command_gate:
     require_heartbeat: true
     heartbeat_timeout: 1.0
     heartbeat_topic: ~/heartbeat
+    heartbeat_type: std_msgs/msg/Empty
     require_enable: false
     enable_topic: ~/enable
     channel_0:

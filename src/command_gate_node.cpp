@@ -39,6 +39,7 @@ void CommandGateNode::declareAndGetParams()
   declare_parameter("require_heartbeat", true);
   declare_parameter("heartbeat_timeout", 1.0);
   declare_parameter("heartbeat_topic", std::string("~/heartbeat"));
+  declare_parameter("heartbeat_type", std::string("std_msgs/msg/Empty"));
   declare_parameter("require_enable", false);
   declare_parameter("enable_topic", std::string("~/enable"));
 
@@ -106,9 +107,10 @@ void CommandGateNode::setupChannels()
 void CommandGateNode::setupHeartbeat()
 {
   std::string heartbeat_topic = get_parameter("heartbeat_topic").as_string();
-  heartbeat_sub_ = create_subscription<std_msgs::msg::Empty>(
-    heartbeat_topic, rclcpp::QoS(10),
-    [this](const std_msgs::msg::Empty::SharedPtr msg) { onHeartbeatCb(msg); });
+  std::string heartbeat_type = get_parameter("heartbeat_type").as_string();
+  heartbeat_sub_ = create_generic_subscription(
+    heartbeat_topic, heartbeat_type, rclcpp::QoS(10),
+    [this](std::shared_ptr<rclcpp::SerializedMessage> msg) { onHeartbeatCb(msg); });
 }
 
 void CommandGateNode::setupEnable()
@@ -196,7 +198,7 @@ void CommandGateNode::publishFallbackOrZero(Channel & ch)
   }
 }
 
-void CommandGateNode::onHeartbeatCb(const std_msgs::msg::Empty::SharedPtr /*msg*/)
+void CommandGateNode::onHeartbeatCb(std::shared_ptr<rclcpp::SerializedMessage> /*msg*/)
 {
   bool was_open = isGateOpen();
   last_heartbeat_time_ = get_clock()->now();

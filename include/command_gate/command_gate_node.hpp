@@ -6,7 +6,6 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/bool.hpp"
-#include "std_msgs/msg/empty.hpp"
 #include "std_srvs/srv/set_bool.hpp"
 
 // NOTE: Assumes single-threaded executor. Loading into a MultiThreadedExecutor
@@ -38,7 +37,7 @@ private:
   rclcpp::Time last_heartbeat_time_;
   std::vector<Channel> channels_;
 
-  rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr heartbeat_sub_;
+  rclcpp::GenericSubscription::SharedPtr heartbeat_sub_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr enable_sub_;
   rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr set_enabled_srv_;
   rclcpp::TimerBase::SharedPtr heartbeat_timer_;
@@ -54,7 +53,7 @@ private:
   void onGateStateChange(bool was_open, bool now_open, const std::string & reason);
   void publishFallbackOrZero(Channel & ch);
 
-  void onHeartbeatCb(const std_msgs::msg::Empty::SharedPtr msg);
+  void onHeartbeatCb(std::shared_ptr<rclcpp::SerializedMessage> msg);
   void heartbeatCheckTimerCb();
   void onEnableTopicCb(const std_msgs::msg::Bool::SharedPtr msg);
   void onSetEnabledCb(

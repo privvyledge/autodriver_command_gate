@@ -42,7 +42,8 @@ Edit `config/command_gate.yaml` before launching or pass a custom config via the
 | `num_channels` | int | `2` | Number of relay channels |
 | `require_heartbeat` | bool | `true` | Gate closes on heartbeat timeout |
 | `heartbeat_timeout` | float (s) | `1.0` | Seconds before heartbeat is considered stale |
-| `heartbeat_topic` | string | `~/heartbeat` | Topic for heartbeat pulses (`std_msgs/Empty`) |
+| `heartbeat_topic` | string | `~/heartbeat` | Topic to watch for heartbeat pulses |
+| `heartbeat_type` | string | `std_msgs/msg/Empty` | ROS 2 type of the heartbeat topic; any type works — only message arrival matters |
 | `require_enable` | bool | `false` | Gate also requires explicit enable signal |
 | `enable_topic` | string | `~/enable` | Topic for enable state (`std_msgs/Bool`) |
 
@@ -85,7 +86,7 @@ command_gate:
 
 | Topic | Type | Description |
 |-------|------|-------------|
-| `~/heartbeat` | `std_msgs/Empty` | Heartbeat pulses; absence closes the gate |
+| `~/heartbeat` | (configured via `heartbeat_type`) | Heartbeat pulses; any message arrival resets the watchdog |
 | `~/enable` | `std_msgs/Bool` | Enable/disable the gate via topic |
 | `<input_topic>` × N | (configured type) | Command inputs for each channel |
 | `<fallback_topic>` × N | (configured type) | Fallback sources buffered per channel |
