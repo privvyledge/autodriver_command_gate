@@ -4,6 +4,8 @@ A ROS 2 Humble safety gate package for F1/10 autonomous racing on Jetson Orin. I
 
 Both a C++ composable node and a functionally identical Python node are provided, sharing the same parameters, topics, and services.
 
+**Also known as:** `cmd_watchdog`, `safety_relay`, `motion_gate`
+
 ## Gate Logic
 
 ```
