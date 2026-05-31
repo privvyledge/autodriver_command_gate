@@ -135,15 +135,16 @@ ros2 launch command_gate command_gate.launch.py config:=/path/to/my_config.yaml
 # Terminal 1 — launch
 ros2 launch command_gate command_gate.launch.py impl:=cpp
 
-# Terminal 2 — heartbeat at 5 Hz
+# Terminal 2 — observe output (relays while heartbeat alive; zeros ~1 s after stopping)
+ros2 topic echo /drive_out
+
+# Terminal 3 — heartbeat at 5 Hz
 ros2 topic pub /command_gate/heartbeat std_msgs/msg/Empty '{}' -r 5
 
-# Terminal 3 — drive commands
+# Terminal 4 — drive commands
 ros2 topic pub /drive_in ackermann_msgs/msg/AckermannDriveStamped \
   '{header: {}, drive: {speed: 1.0}}' -r 10
 
-# Terminal 4 — observe output (relays while heartbeat alive; zeros ~1 s after stopping)
-ros2 topic echo /drive_out
 
 # Test enable service
 ros2 service call /command_gate/set_enabled std_srvs/srv/SetBool '{data: false}'
